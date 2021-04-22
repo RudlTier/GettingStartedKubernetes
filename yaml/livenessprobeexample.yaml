@@ -1,0 +1,50 @@
+      
+
+# The existence of the /tmp/healthy file is configured to be checked every 5 seconds using
+# the periodSeconds parameter. The initialDelaySeconds parameter requests the kubelet to wait for 3
+# seconds before the first probe. When running the command line argument to the container, we will first create
+# the /tmp/healthy file, and then we will remove it after 30 seconds. The removal of the file would trigger a
+# probe failure, while the failureThreshold parameter set to 1 instructs kubelet to declare the container
+# unhealthy after a single probe failure and trigger a container restart as a result.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    test: liveness
+  name: liveness-exec
+spec:
+  containers:
+  - name: liveness
+    image: k8s.gcr.io/busybox
+    args:
+    - /bin/sh
+    - -c
+    - touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
+    livenessProbe:
+      exec:
+        command:
+        - cat
+        - /tmp/healthy
+      initialDelaySeconds: 3
+      # the container will restart after a single failed probe
+      failureThreshold: 1
+      periodSeconds: 5
+    
+      # Example for http liveness probe
+      # livenessProbe:
+      #  httpGet:
+      #    path: /healthz
+      #    port: 8080
+      #    httpHeaders:
+      #    - name: X-Custom-Header
+      #      value: Awesome
+      #  initialDelaySeconds: 3
+      #  periodSeconds: 3
+
+      # Tcp liveness Probe
+      # livenessProbe:
+      # tcpSocket:
+      #   port: 8080
+      # initialDelaySeconds: 15
+      # periodSeconds: 20
