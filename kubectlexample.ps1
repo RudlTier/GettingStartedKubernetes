@@ -10,6 +10,9 @@ kubectl create -f .\yaml\webserver-svc.yaml
 # Expose a Deployment with the kubectl expose command:
 kubectl expose deployment webserver --name=web-service --type=NodePort
 
+# You can also expose single pods
+kubectl expose pod share-pod --type=NodePort --port=80
+
 # It is not necessary to create the Deployment first, and the Service after. They can be created in any order. A Service will find and connect Pods based on the Selector.
 
 ###### GET Requests
@@ -27,3 +30,6 @@ kubectl get replicasets
 
 # List Services 
 kubectl get services
+
+# Delete a pod
+kubectl delete pods #podname
